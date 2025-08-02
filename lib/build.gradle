@@ -1,0 +1,76 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    id 'maven-publish'
+}
+
+
+project.ext {
+    artifactId = 'lib_that_uses_yandex_auth'
+    groupId = 'com.github.aakumykov'
+
+    majorVersionNum = 0
+    minorVersionNum = 0
+    patchVersionNum = 1
+
+    versionCode = 1
+
+    versionName = majorVersionNum + "." + minorVersionNum + "." + patchVersionNum
+}
+
+android {
+    namespace groupId + '.' + artifactId
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 24
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
+}
+
+dependencies {
+
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.material
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.junit
+    androidTestImplementation libs.androidx.espresso.core
+
+    implementation 'com.yandex.android:authsdk:3.1.0'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = project.groupId
+            artifactId = project.artifactId
+            version = versionName
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+}
